@@ -1,0 +1,8 @@
+line = 2;
+textLayer = thisComp.layer("Text");
+
+try {
+    textLayer.text.sourceText.split(/\n|\r/)[line - 1];
+} catch (err) {
+    ""
+};
