@@ -1,0 +1,29 @@
+try {
+    m = thisLayer.marker; //замени на thisComp.marker для триггера на маркеры композиции, а не маркеры слоя
+
+    firstKeyTime = thisProperty.key(1).time; //время первого ключа
+    lastKeyTime = thisProperty.key(thisProperty.numKeys).time; //время последнего ключа
+
+    n = 0;
+    //ищем ближайший маркер слева:
+    if (m.numKeys > 0) { //если маркеров больше 0
+        n = m.nearestKey(time).index; //номер ближайшего маркера
+        if (m.key(n).time > time) n--; //если время ближайшего маркера больше текущего времени, то берем предыдущий маркер
+    }
+    //зкончили искать ближайший маркер слева
+
+    if (n > 0) { //если мы нашли маркер слева, то:
+        inMarker = m.key(n).time; //начало маркера
+        markerDuration = m.key(n).duration; //длительность маркера
+        markerMid = inMarker + markerDuration / 2; //середина между началом и концом маркера (точка, где анимация развернется)
+        outMarker = inMarker + markerDuration; //конец маркера
+
+        if (markerDuration == 0) thisProperty.valueAtTime(firstKeyTime + (time - inMarker)); //если обычный маркер, то проигрываем анимамацию начиная с первого ключа:
+        else { //в противном случае (т.е. когда маркер растянут)
+            if (time <= markerMid) thisProperty.valueAtTime(firstKeyTime + (time - inMarker)); //если мы в первой половине текущего маркера, то проигрываем анимамацию начиная с первого ключа
+            else thisProperty.valueAtTime(firstKeyTime + outMarker - time); //если мы во второй половине текущего маркера, то проигрываем анимамацию в обратную сторону, начиная с положения "до куда успели за половину маркера" 
+        }
+    } else thisProperty.valueAtTime(firstKeyTime); //до первого маркера показываем значение из первого ключи (замени на "value" если хочешь чтоб показывало анимацию ключей)
+} catch (e) {
+    value //если нет ключей (или еще какая фигня), то просто value
+}
